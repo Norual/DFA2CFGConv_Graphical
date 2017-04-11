@@ -82,7 +82,7 @@
         Dim DrawE_Location As Integer = 1
         Dim FillE_Location As Integer = 2
 
-        'g.FillEllipse(New SolidBrush(Color.FromArgb(128, Color.Red)), FillE_Location, FillE_Location, FillE_dim, FillE_dim)
+        g.FillEllipse(New SolidBrush(Color.FromArgb(128, Color.Red)), FillE_Location, FillE_Location, FillE_dim, FillE_dim)
         g.DrawEllipse(New Pen(Color.FromArgb(128, Color.Black), 2), DrawE_Location, DrawE_Location, DrawE_dim, DrawE_dim)
         g.Dispose()
     End Sub
