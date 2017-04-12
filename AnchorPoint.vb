@@ -7,7 +7,10 @@
     Private m_bmpImage As Bitmap
     Private m_bmpImage_Trans As Bitmap
     Private m_bmpPbxClone As Bitmap
+
     Private m_pLocation As Point
+
+    Private m_bStateFocused As Boolean = False
 
     Friend Property Name As String
         Get
@@ -28,7 +31,7 @@
         End Set
     End Property
 
-    Friend Sub ShowTransparentCircle(ByVal pbx As PictureBox)
+    Friend Sub ShowTransparentCircle(ByVal sender As String, ByVal pbx As PictureBox)
         Dim bmp As Bitmap = pbx.Image.Clone
         Dim g As Graphics = Graphics.FromImage(bmp)
         g.DrawImage(m_bmpSmallCircle_Transparent, m_pLocation)

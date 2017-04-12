@@ -19,10 +19,11 @@
 
     Private m_CollectionOfSmallCircles As New Dictionary(Of String, AnchorPoint)
 
-    Friend Event MouseEntered(ByVal sender As Object)
-    Friend Event MouseLeave()
-    Friend Event Refresh(ByVal sender As Object)
-    Friend Event MouseMove(ByVal sender As Object)
+    Friend Event eMouseEntered(ByVal sender As String, ByVal pbx As PictureBox)
+    Friend Event eMouseLeave()
+    Friend Event eRefresh(ByVal sender As Object)
+    Friend Event eMouseMove(ByVal sender As Object)
+    Friend Event eMouseUp(ByVal sender As PictureBox, ByVal p As Point)
 
     Friend Property Name As String
         Get
@@ -38,7 +39,7 @@
     End Sub
 
     Friend Sub StateFocused(ByVal sender As Object)
-        m_strFocusedState = CType(sender, State).Name
+        m_strFocusedState = sender
     End Sub
 
     Friend Sub StateUnFocused()
@@ -58,14 +59,14 @@
                         Dim b As Integer = Math.Abs(pLocation.Y - e.Location.Y)
                         Dim hypotenuse As Integer = Math.Sqrt((a ^ 2) + (b ^ 2))
                         If hypotenuse < Radius + 1 And Not m_bMouseEntered Then
-                            RaiseEvent MouseEntered(Me)
                             m_pbxClone = BackImage(pbx)
+                            RaiseEvent eMouseEntered(Name, pbx)
                             'HighlightState(pbx, m_pLocation)
                             m_bMouseEntered = True
                         ElseIf hypotenuse > Radius + 4 And m_bMouseEntered Then
                             pbx.Image = m_pbxClone
                             m_bMouseEntered = False
-                            RaiseEvent MouseLeave()
+                            RaiseEvent eMouseLeave()
                         End If
                     ElseIf m_bMouseDown Then
                         pbx.Image = Nothing
@@ -85,7 +86,7 @@
                     If Not m_bMouseDown Then
                         Dim pbx As PictureBox = CType(sender, PictureBox)
                         m_pDiff = New Point(e.Location.X - m_pLocation.X, e.Location.Y - m_pLocation.Y)
-                        RaiseEvent Refresh(Me)
+                        RaiseEvent eRefresh(Me)
                         m_pbxClone = BackImage(pbx)
                         MoveState(pbx, e.Location)
                         m_bMouseDown = True
@@ -102,9 +103,10 @@
                 If m_bMouseEntered Then
                     If m_bMouseDown Then
                         Dim pbx As PictureBox = CType(sender, PictureBox)
-                        RaiseEvent Refresh(Nothing)
+                        RaiseEvent eRefresh(Nothing)
                         m_pbxClone = BackImage(pbx)
-                        'HighlightState(pbx, m_pLocation)
+                        UpdateSmallCirclesLocation()
+                        RaiseEvent eMouseEntered(Name, pbx)
                         m_bMouseDown = False
                     End If
                 End If
@@ -172,7 +174,7 @@
         m_CollectionOfSmallCircles.Add("Anc5", New AnchorPoint("Anc5", pbx, New Point(origLoc.X + Radius, origLoc.Y)))
         m_CollectionOfSmallCircles.Add("Anc7", New AnchorPoint("Anc7", pbx, New Point(origLoc.X, origLoc.Y - Radius)))
 
-        Dim loc45deg As New Point(Math.Floor(Math.Cos(45) * Radius), Math.Floor(Math.Sin(45) * Radius))
+        Dim loc45deg As New Point(Math.Floor(Math.Cos(Math.PI / 4) * Radius), Math.Floor(Math.Sin(Math.PI / 4) * Radius))
 
         m_CollectionOfSmallCircles.Add("Anc2", New AnchorPoint("Anc2", pbx, New Point(origLoc.X - loc45deg.X, origLoc.Y - loc45deg.Y)))
         m_CollectionOfSmallCircles.Add("Anc4", New AnchorPoint("Anc4", pbx, New Point(origLoc.X - loc45deg.X, origLoc.Y + loc45deg.Y)))
@@ -180,9 +182,26 @@
         m_CollectionOfSmallCircles.Add("Anc8", New AnchorPoint("Anc8", pbx, New Point(origLoc.X + loc45deg.X, origLoc.Y - loc45deg.Y)))
 
         For Each anc As AnchorPoint In m_CollectionOfSmallCircles.Values
-            ' AddHandler Me.MouseEntered, anc.ShowTransparentCircle
+            AddHandler Me.eMouseEntered, AddressOf anc.ShowTransparentCircle
         Next
     End Sub
+
+    Private Sub UpdateSmallCirclesLocation()
+        Dim origLoc As New Point(m_pLocation.X + Math.Floor(m_bmpCircle.Width / 2), m_pLocation.Y + Math.Floor(m_bmpCircle.Height / 2))
+
+        m_CollectionOfSmallCircles("Anc1").Location = New Point(origLoc.X - Radius, origLoc.Y)
+        m_CollectionOfSmallCircles("Anc3").Location = New Point(origLoc.X, origLoc.Y + Radius)
+        m_CollectionOfSmallCircles("Anc5").Location = New Point(origLoc.X + Radius, origLoc.Y)
+        m_CollectionOfSmallCircles("Anc7").Location = New Point(origLoc.X, origLoc.Y - Radius)
+
+        Dim loc45deg As New Point(Math.Floor(Math.Cos(Math.PI / 4) * Radius), Math.Floor(Math.Sin(Math.PI / 4) * Radius))
+
+        m_CollectionOfSmallCircles("Anc2").Location = New Point(origLoc.X - loc45deg.X, origLoc.Y - loc45deg.Y)
+        m_CollectionOfSmallCircles("Anc4").Location = New Point(origLoc.X - loc45deg.X, origLoc.Y + loc45deg.Y)
+        m_CollectionOfSmallCircles("Anc6").Location = New Point(origLoc.X + loc45deg.X, origLoc.Y + loc45deg.Y)
+        m_CollectionOfSmallCircles("Anc8").Location = New Point(origLoc.X + loc45deg.X, origLoc.Y - loc45deg.Y)
+    End Sub
+
 
     Public Sub New(ByVal strName As String, ByVal pbx As PictureBox, ByVal p As Point)
         m_strName = strName

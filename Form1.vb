@@ -34,7 +34,7 @@
         bmpClone.Dispose()
     End Sub
 
-    Private Sub State_MouseEntered(ByVal sender As Object)
+    Private Sub State_MouseEntered(ByVal sender As String, ByVal pbx As PictureBox)
         RaiseEvent StateFocused(sender)
     End Sub
 
@@ -57,10 +57,10 @@
         AddHandler pbxDisplay.MouseUp, AddressOf m_CollectionOfStates(m_intNumOfStates).MouseUp
         AddHandler Me.StateFocused, AddressOf m_CollectionOfStates(m_intNumOfStates).StateFocused
         AddHandler Me.StateUnFocused, AddressOf m_CollectionOfStates(m_intNumOfStates).StateUnFocused
-        AddHandler m_CollectionOfStates(m_intNumOfStates).MouseLeave, AddressOf State_MouseLeave
-        AddHandler m_CollectionOfStates(m_intNumOfStates).MouseEntered, AddressOf State_MouseEntered
+        AddHandler m_CollectionOfStates(m_intNumOfStates).eMouseLeave, AddressOf State_MouseLeave
+        AddHandler m_CollectionOfStates(m_intNumOfStates).eMouseEntered, AddressOf State_MouseEntered
         AddHandler RefreshImage, AddressOf m_CollectionOfStates(m_intNumOfStates).DrawImage
-        AddHandler m_CollectionOfStates(m_intNumOfStates).Refresh, AddressOf RefreshDisplay
+        AddHandler m_CollectionOfStates(m_intNumOfStates).eRefresh, AddressOf RefreshDisplay
 
         pbxDisplay.Image = Nothing
         RaiseEvent RefreshImage(Nothing, pbxDisplay)
