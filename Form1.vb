@@ -51,7 +51,7 @@
         Dim st As New State("State" & m_intNumOfStates, pbxDisplay, p)
         m_CollectionOfStates.Add(m_intNumOfStates, st)
 
-        AddHandler pbxDisplay.MouseMove, AddressOf m_CollectionOfStates(m_intNumOfStates).MouseMove
+        AddHandler pbxDisplay.MouseMove, AddressOf m_CollectionOfStates(m_intNumOfStates).MouseMoves
         AddHandler ToolSelected, AddressOf m_CollectionOfStates(m_intNumOfStates).ToolSelected
         AddHandler pbxDisplay.MouseDown, AddressOf m_CollectionOfStates(m_intNumOfStates).MouseDown
         AddHandler pbxDisplay.MouseUp, AddressOf m_CollectionOfStates(m_intNumOfStates).MouseUp
@@ -129,7 +129,6 @@
         m_bmpClone1 = BackImage()
     End Sub
 #End Region
-
 
 
 End Class
