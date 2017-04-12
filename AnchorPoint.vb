@@ -31,13 +31,22 @@
         End Set
     End Property
 
-    Friend Sub ShowTransparentCircle(ByVal sender As String, ByVal pbx As PictureBox)
+    Friend Sub MouseEnteredState(ByVal sender As String, ByVal Pbx As PictureBox)
+
+    End Sub
+
+    Friend Sub MouseLeaveState()
+
+    End Sub
+
+    Friend Sub ShowTransparentCircle(ByVal pbx As PictureBox)
         Dim bmp As Bitmap = pbx.Image.Clone
         Dim g As Graphics = Graphics.FromImage(bmp)
         g.DrawImage(m_bmpSmallCircle_Transparent, m_pLocation)
         pbx.Image = bmp.Clone
         g.Dispose()
         bmp.Dispose()
+        m_bStateFocused = True
     End Sub
 
     Private Sub DrawPoint(ByVal pbx As PictureBox, ByVal p As Point)
@@ -57,6 +66,14 @@
         g.Dispose()
         bmp.Dispose()
         bmp2.Dispose()
+    End Sub
+
+    Friend Sub MouseEntered()
+
+    End Sub
+
+    Friend Sub MouseLeave()
+
     End Sub
 
     Public Sub New(ByVal strName As String, ByVal pbx As PictureBox, ByVal p As Point)
