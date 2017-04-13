@@ -11,9 +11,6 @@
     Private m_bDA_MouseDown As Boolean = False
 
     Friend Event SelectedToolChanged(ByVal tool As Tools)
-    Friend Event StateFocused(ByVal s As Object)
-    Friend Event StateUnFocused()
-    Friend Event RefreshImage(ByVal sender As State, ByVal s As PictureBox)
 
     Public Sub New(ByVal pbox As PictureBox)
         DisplayArea = pbox
@@ -47,19 +44,6 @@
         End Set
     End Property
 
-    Private Sub State_MouseEntered(ByVal sender As String, ByVal pbx As PictureBox)
-        RaiseEvent StateFocused(sender)
-    End Sub
-
-    Private Sub State_MouseLeave()
-        RaiseEvent StateUnFocused()
-    End Sub
-
-    Private Sub RefreshDisplay(ByVal sender As State)
-        DisplayArea.Image = Nothing
-        RaiseEvent RefreshImage(sender, DisplayArea)
-    End Sub
-
     Private Function GetCurrentDisplayImage() As Bitmap
         If DisplayArea.Image Is Nothing Then
             Return New Bitmap(DisplayArea.Width, DisplayArea.Height)
@@ -82,13 +66,6 @@
         Dim m_intNUmOfStates As Integer = m_listOfStates.Count
         Dim st As New State("State" & m_intNUmOfStates, Me, p)
         m_listOfStates.Add(st)
-
-        AddHandler m_listOfStates(m_intNUmOfStates).eMouseLeave, AddressOf State_MouseLeave
-        AddHandler m_listOfStates(m_intNUmOfStates).eMouseEntered, AddressOf State_MouseEntered
-        AddHandler m_listOfStates(m_intNUmOfStates).eRefresh, AddressOf RefreshDisplay
-
-        DisplayArea.Image = Nothing
-        RaiseEvent RefreshImage(Nothing, DisplayArea)
     End Sub
 
     Private Sub DisplayArea_MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles DisplayArea.MouseDown

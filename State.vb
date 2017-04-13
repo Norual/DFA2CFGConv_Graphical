@@ -1,4 +1,7 @@
 ﻿Public Class State
+    Private Shared m_State_MouseEntered As String = ""
+    Private Shared Event ReDraw(ByVal sender As String)
+
     Private WithEvents m_diag As Diagram
     Private WithEvents m_PBox As PictureBox
 
@@ -10,7 +13,6 @@
     Private m_ToolSelected As Tools = Tools.State
 
     Private m_strName As String
-    Private m_strFocusedState As String
 
     Private m_bMouseEntered As Boolean = False
     Private m_bMouseDown As Boolean = False
@@ -20,11 +22,10 @@
 
     Private m_CollectionOfSmallCircles As New Dictionary(Of String, AnchorPoint)
 
-    Friend Event eMouseEntered(ByVal sender As String, ByVal pbx As PictureBox)
-    Friend Event eMouseLeave()
-    Friend Event eRefresh(ByVal sender As Object)
-    Friend Event eMouseMove(ByVal sender As Object, ByVal e As MouseEventArgs)
-    Friend Event eMouseUp(ByVal sender As PictureBox, ByVal p As Point)
+    Friend Event MouseEntered(ByVal sender As String, ByVal pbx As PictureBox)
+    Friend Event MouseLeave()
+    Friend Event MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs)
+    Friend Event MouseUp(ByVal sender As PictureBox, ByVal p As Point)
 
     Friend Property Name As String
         Get
@@ -35,13 +36,15 @@
         End Set
     End Property
 
-
-    Private Sub Diag_StateFocused(ByVal sender As Object) Handles m_diag.StateFocused
-        m_strFocusedState = sender
-    End Sub
-
-    Private Sub Diag_StateUnFocused() Handles m_diag.StateUnFocused
-        m_strFocusedState = ""
+    Private Sub State_ReDraw(ByVal sender As String) Handles Me.ReDraw
+        If sender <> Name Then
+            Dim bmp As Bitmap = GetCurrentDisplayImage(m_PBox)
+            Dim g As Graphics = Graphics.FromImage(bmp)
+            g.DrawImage(m_bmpImage, 0, 0)
+            m_PBox.Image = bmp.Clone
+            bmp.Dispose()
+            g.Dispose()
+        End If
     End Sub
 
     Private Sub Diag_SelectedToolChanged(ByVal tool As Tools) Handles m_diag.SelectedToolChanged
@@ -49,13 +52,13 @@
     End Sub
 
     Private Sub PBox_MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseMove
-        If m_strFocusedState = "" Or m_strFocusedState = Me.Name Then
+        If m_State_MouseEntered = "" Or m_State_MouseEntered = Me.Name Then
             Select Case m_ToolSelected
                 Case Tools.Pointer
 
                     Dim pbx As PictureBox = CType(sender, PictureBox)
 
-                    RaiseEvent eMouseMove(sender, e)
+                    RaiseEvent MouseMove(sender, e)
 
                     If Not m_bMouseDown Then
                         Dim pLocation As New Point(m_pLocation.X + Math.Floor(m_bmpCircle.Width / 2), m_pLocation.Y + Math.Floor(m_bmpCircle.Height / 2))
@@ -63,13 +66,15 @@
                         Dim b As Integer = Math.Abs(pLocation.Y - e.Location.Y)
                         Dim hypotenuse As Integer = Math.Sqrt((a ^ 2) + (b ^ 2))
                         If hypotenuse < Radius + 1 And Not m_bMouseEntered Then
-                            m_pbxClone = BackImage(pbx)
-                            RaiseEvent eMouseEntered(Name, pbx)
+                            m_pbxClone = GetCurrentDisplayImage(pbx)
+                            m_State_MouseEntered = Name
+                            RaiseEvent MouseEntered(Name, pbx)
                             m_bMouseEntered = True
                         ElseIf hypotenuse > Radius + 4 And m_bMouseEntered Then
                             pbx.Image = m_pbxClone
                             m_bMouseEntered = False
-                            RaiseEvent eMouseLeave()
+                            m_State_MouseEntered = ""
+                            RaiseEvent MouseLeave()
                         End If
                     ElseIf m_bMouseDown Then
                         pbx.Image = Nothing
@@ -89,8 +94,8 @@
                     If Not m_bMouseDown Then
                         Dim pbx As PictureBox = CType(sender, PictureBox)
                         m_pDiff = New Point(e.Location.X - m_pLocation.X, e.Location.Y - m_pLocation.Y)
-                        RaiseEvent eRefresh(Me)
-                        m_pbxClone = BackImage(pbx)
+                        RaiseEvent_ReDraw(Name)
+                        m_pbxClone = GetCurrentDisplayImage(pbx)
                         MoveState(pbx, e.Location)
                         m_bMouseDown = True
                     End If
@@ -106,10 +111,10 @@
                 If m_bMouseEntered Then
                     If m_bMouseDown Then
                         Dim pbx As PictureBox = CType(sender, PictureBox)
-                        RaiseEvent eRefresh(Nothing)
-                        m_pbxClone = BackImage(pbx)
+                        RaiseEvent_ReDraw("")
+                        m_pbxClone = GetCurrentDisplayImage(pbx)
                         UpdateSmallCirclesLocation()
-                        RaiseEvent eMouseEntered(Name, pbx)
+                        RaiseEvent MouseEntered(Name, pbx)
                         m_bMouseDown = False
                     End If
                 End If
@@ -118,19 +123,13 @@
         End Select
     End Sub
 
-    Private Sub Diag_RefreshImage(ByVal sender As State, ByVal pbx As PictureBox) Handles m_diag.RefreshImage
-        If sender Is Nothing OrElse sender.Name <> Name Then
-            Dim bmp As Bitmap = BackImage(pbx)
-            Dim g As Graphics = Graphics.FromImage(bmp)
-            g.DrawImage(m_bmpImage, 0, 0)
-            pbx.Image = bmp.Clone
-            bmp.Dispose()
-            g.Dispose()
-        End If
+    Private Sub RaiseEvent_ReDraw(ByVal sender As String)
+        m_PBox.Image = Nothing
+        RaiseEvent ReDraw(sender)
     End Sub
 
     Private Sub MoveState(ByVal pbx As PictureBox, ByVal p As Point)
-        Dim bmp As Bitmap = BackImage(pbx, True)
+        Dim bmp As Bitmap = GetCurrentDisplayImage(pbx, True)
         Dim g As Graphics = Graphics.FromImage(bmp)
         m_pLocation = New Point(p.X - m_pDiff.X, p.Y - m_pDiff.Y)
         g.DrawImage(m_bmpCircle, m_pLocation)
@@ -143,7 +142,7 @@
     End Sub
 
     Private Sub HighlightState(ByVal pbx As PictureBox, ByVal p As Point)
-        Dim bmp As Bitmap = BackImage(pbx)
+        Dim bmp As Bitmap = GetCurrentDisplayImage(pbx)
         Dim g As Graphics = Graphics.FromImage(bmp)
         g.DrawImage(m_bmpHighlightedCircle, m_pLocation)
         pbx.Image = bmp.Clone
@@ -161,7 +160,7 @@
         g.Dispose()
     End Sub
 
-    Private Function BackImage(ByVal pbx As PictureBox, Optional bForceCreateNew As Boolean = False) As Bitmap
+    Private Function GetCurrentDisplayImage(ByVal pbx As PictureBox, Optional bForceCreateNew As Boolean = False) As Bitmap
         If pbx.Image Is Nothing Or bForceCreateNew Then
             Return New Bitmap(pbx.Width, pbx.Height)
         Else
@@ -185,9 +184,9 @@
         m_CollectionOfSmallCircles.Add("Anc8", New AnchorPoint("Anc8", pbx, New Point(center.X + loc45deg.X, center.Y - loc45deg.Y)))
 
         For Each anc As AnchorPoint In m_CollectionOfSmallCircles.Values
-            AddHandler Me.eMouseEntered, AddressOf anc.MouseEnteredState
-            AddHandler Me.eMouseLeave, AddressOf anc.MouseLeftState
-            AddHandler Me.eMouseMove, AddressOf anc.MouseMove
+            AddHandler Me.MouseEntered, AddressOf anc.MouseEnteredState
+            AddHandler Me.MouseLeave, AddressOf anc.MouseLeftState
+            AddHandler Me.MouseMove, AddressOf anc.MouseMove
         Next
     End Sub
 
@@ -215,6 +214,7 @@
         DrawState(diag.PBox, p)
         m_bmpHighlightedCircle = m_Objects.Circle_Highlight
         AddSmallCircles(diag.PBox)
+        RaiseEvent_ReDraw("")
     End Sub
 
 End Class
