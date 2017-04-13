@@ -49,8 +49,9 @@
             Select Case m_ToolSelected
                 Case Tools.Pointer
 
-
                     Dim pbx As PictureBox = CType(sender, PictureBox)
+
+                    RaiseEvent eMouseMove(sender, e)
 
                     If Not m_bMouseDown Then
                         Dim pLocation As New Point(m_pLocation.X + Math.Floor(m_bmpCircle.Width / 2), m_pLocation.Y + Math.Floor(m_bmpCircle.Height / 2))
@@ -66,7 +67,6 @@
                             m_bMouseEntered = False
                             RaiseEvent eMouseLeave()
                         End If
-                        RaiseEvent eMouseMove(sender, e)
                     ElseIf m_bMouseDown Then
                         pbx.Image = Nothing
                         MoveState(pbx, e.Location)
