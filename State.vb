@@ -1,4 +1,7 @@
 ﻿Public Class State
+    Private WithEvents m_diag As Diagram
+    Private WithEvents m_PBox As PictureBox
+
     Private m_bmpImage As Bitmap
     Private m_pbxClone As Bitmap
     Private m_bmpCircle As Bitmap
@@ -32,19 +35,20 @@
         End Set
     End Property
 
-    Friend Sub ToolSelected(ByVal tool As Tools)
-        m_ToolSelected = tool
-    End Sub
 
-    Friend Sub StateFocused(ByVal sender As Object)
+    Friend Sub Diag_StateFocused(ByVal sender As Object) Handles m_diag.StateFocused
         m_strFocusedState = sender
     End Sub
 
-    Friend Sub StateUnFocused()
+    Friend Sub Diag_StateUnFocused() Handles m_diag.StateUnFocused
         m_strFocusedState = ""
     End Sub
 
-    Friend Sub MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs)
+    Friend Sub Diag_SelectedToolChanged(ByVal tool As Tools) Handles m_diag.SelectedToolChanged
+        m_ToolSelected = tool
+    End Sub
+
+    Friend Sub PBox_MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseMove
         If m_strFocusedState = "" Or m_strFocusedState = Me.Name Then
             Select Case m_ToolSelected
                 Case Tools.Pointer
@@ -78,7 +82,7 @@
         End If
     End Sub
 
-    Friend Sub MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs)
+    Friend Sub PBox_MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseDown
         Select Case m_ToolSelected
             Case Tools.Pointer
                 If m_bMouseEntered Then
@@ -96,7 +100,7 @@
         End Select
     End Sub
 
-    Friend Sub MouseUp(ByVal sender As Object, ByVal e As MouseEventArgs)
+    Friend Sub PBox_MouseUp(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseUp
         Select Case m_ToolSelected
             Case Tools.Pointer
                 If m_bMouseEntered Then
@@ -114,7 +118,7 @@
         End Select
     End Sub
 
-    Friend Sub DrawImage(ByVal sender As State, ByVal pbx As PictureBox)
+    Friend Sub Diag_RefreshImage(ByVal sender As State, ByVal pbx As PictureBox) Handles m_diag.RefreshImage
         If sender Is Nothing OrElse sender.Name <> Name Then
             Dim bmp As Bitmap = BackImage(pbx)
             Dim g As Graphics = Graphics.FromImage(bmp)
@@ -203,12 +207,14 @@
         m_CollectionOfSmallCircles("Anc8").Location = New Point(origLoc.X + loc45deg.X, origLoc.Y - loc45deg.Y)
     End Sub
 
-    Public Sub New(ByVal strName As String, ByVal pbx As PictureBox, ByVal p As Point)
+    Public Sub New(ByVal strName As String, ByVal diag As Diagram, ByVal p As Point)
+        m_diag = diag
+        m_PBox = diag.PBox
         m_strName = strName
         m_bmpCircle = m_Objects.Circle
-        DrawState(pbx, p)
+        DrawState(diag.PBox, p)
         m_bmpHighlightedCircle = m_Objects.Circle_Highlight
-        AddSmallCircles(pbx)
+        AddSmallCircles(diag.PBox)
     End Sub
 
 End Class

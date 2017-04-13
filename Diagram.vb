@@ -10,7 +10,7 @@
 
     Private m_bDA_MouseDown As Boolean = False
 
-    Friend Event ToolSelected(ByVal tool As Tools)
+    Friend Event SelectedToolChanged(ByVal tool As Tools)
     Friend Event StateFocused(ByVal s As Object)
     Friend Event StateUnFocused()
     Friend Event RefreshImage(ByVal sender As State, ByVal s As PictureBox)
@@ -34,7 +34,16 @@
 
             End Select
 
-            RaiseEvent ToolSelected(m_Tool)
+            RaiseEvent SelectedToolChanged(m_Tool)
+        End Set
+    End Property
+
+    Friend Property PBox As PictureBox
+        Get
+            Return DisplayArea
+        End Get
+        Set(value As PictureBox)
+            DisplayArea = value
         End Set
     End Property
 
@@ -71,18 +80,11 @@
 
     Private Sub CreateState(ByVal p As Point)
         Dim m_intNUmOfStates As Integer = m_listOfStates.Count
-        Dim st As New State("State" & m_intNUmOfStates, DisplayArea, p)
+        Dim st As New State("State" & m_intNUmOfStates, Me, p)
         m_listOfStates.Add(st)
 
-        AddHandler DisplayArea.MouseMove, AddressOf m_listOfStates(m_intNUmOfStates).MouseMove
-        AddHandler ToolSelected, AddressOf m_listOfStates(m_intNUmOfStates).ToolSelected
-        AddHandler DisplayArea.MouseDown, AddressOf m_listOfStates(m_intNUmOfStates).MouseDown
-        AddHandler DisplayArea.MouseUp, AddressOf m_listOfStates(m_intNUmOfStates).MouseUp
-        AddHandler StateFocused, AddressOf m_listOfStates(m_intNUmOfStates).StateFocused
-        AddHandler StateUnFocused, AddressOf m_listOfStates(m_intNUmOfStates).StateUnFocused
         AddHandler m_listOfStates(m_intNUmOfStates).eMouseLeave, AddressOf State_MouseLeave
         AddHandler m_listOfStates(m_intNUmOfStates).eMouseEntered, AddressOf State_MouseEntered
-        AddHandler RefreshImage, AddressOf m_listOfStates(m_intNUmOfStates).DrawImage
         AddHandler m_listOfStates(m_intNUmOfStates).eRefresh, AddressOf RefreshDisplay
 
         DisplayArea.Image = Nothing
