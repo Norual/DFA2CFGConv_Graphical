@@ -36,19 +36,19 @@
     End Property
 
 
-    Friend Sub Diag_StateFocused(ByVal sender As Object) Handles m_diag.StateFocused
+    Private Sub Diag_StateFocused(ByVal sender As Object) Handles m_diag.StateFocused
         m_strFocusedState = sender
     End Sub
 
-    Friend Sub Diag_StateUnFocused() Handles m_diag.StateUnFocused
+    Private Sub Diag_StateUnFocused() Handles m_diag.StateUnFocused
         m_strFocusedState = ""
     End Sub
 
-    Friend Sub Diag_SelectedToolChanged(ByVal tool As Tools) Handles m_diag.SelectedToolChanged
+    Private Sub Diag_SelectedToolChanged(ByVal tool As Tools) Handles m_diag.SelectedToolChanged
         m_ToolSelected = tool
     End Sub
 
-    Friend Sub PBox_MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseMove
+    Private Sub PBox_MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseMove
         If m_strFocusedState = "" Or m_strFocusedState = Me.Name Then
             Select Case m_ToolSelected
                 Case Tools.Pointer
@@ -82,7 +82,7 @@
         End If
     End Sub
 
-    Friend Sub PBox_MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseDown
+    Private Sub PBox_MouseDown(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseDown
         Select Case m_ToolSelected
             Case Tools.Pointer
                 If m_bMouseEntered Then
@@ -100,7 +100,7 @@
         End Select
     End Sub
 
-    Friend Sub PBox_MouseUp(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseUp
+    Private Sub PBox_MouseUp(ByVal sender As Object, ByVal e As MouseEventArgs) Handles m_PBox.MouseUp
         Select Case m_ToolSelected
             Case Tools.Pointer
                 If m_bMouseEntered Then
@@ -118,7 +118,7 @@
         End Select
     End Sub
 
-    Friend Sub Diag_RefreshImage(ByVal sender As State, ByVal pbx As PictureBox) Handles m_diag.RefreshImage
+    Private Sub Diag_RefreshImage(ByVal sender As State, ByVal pbx As PictureBox) Handles m_diag.RefreshImage
         If sender Is Nothing OrElse sender.Name <> Name Then
             Dim bmp As Bitmap = BackImage(pbx)
             Dim g As Graphics = Graphics.FromImage(bmp)
