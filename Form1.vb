@@ -1,7 +1,5 @@
 ﻿Public Class Form1
 
-    Private m_Objects As New Objects
-
     Private m_ToolSelected As Tools
 
 #Region "Bitmaps Declaration"
@@ -51,7 +49,7 @@
         Dim st As New State("State" & m_intNumOfStates, pbxDisplay, p)
         m_CollectionOfStates.Add(m_intNumOfStates, st)
 
-        AddHandler pbxDisplay.MouseMove, AddressOf m_CollectionOfStates(m_intNumOfStates).MouseMoves
+        AddHandler pbxDisplay.MouseMove, AddressOf m_CollectionOfStates(m_intNumOfStates).MouseMove
         AddHandler ToolSelected, AddressOf m_CollectionOfStates(m_intNumOfStates).ToolSelected
         AddHandler pbxDisplay.MouseDown, AddressOf m_CollectionOfStates(m_intNumOfStates).MouseDown
         AddHandler pbxDisplay.MouseUp, AddressOf m_CollectionOfStates(m_intNumOfStates).MouseUp
@@ -106,7 +104,7 @@
             Case Tools.State
         End Select
 
-        m_bmpClone1 = pbxDisplay.Image.Clone
+        m_bmpClone1 = BackImage()
     End Sub
 
     Private Sub btnClick(sender As System.Object, e As System.EventArgs) Handles btnPointer.Click, btnState.Click
