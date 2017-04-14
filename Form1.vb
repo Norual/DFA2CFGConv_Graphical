@@ -6,9 +6,9 @@
 
         Select Case btn.Name
             Case "btnPointer"
-                diag.SelectedTool  = Tools.Pointer
+                diag.SelectedTool = Diagram.Tools.Pointer
             Case "btnState"
-                diag.SelectedTool = Tools.State
+                diag.SelectedTool = Diagram.Tools.State
         End Select
 
     End Sub

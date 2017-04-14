@@ -1,11 +1,6 @@
 ﻿Module Globals
 
-    Public m_Objects As New Objects
-
-    Public Enum Tools
-        Pointer
-        State
-    End Enum
+    Public G_Objects As New Objects
 
     Public Const CircleDiam As Integer = 60 'actual diameter - 1. Must always be an even number.
     Public Const Radius As Integer = CInt(CircleDiam / 2)

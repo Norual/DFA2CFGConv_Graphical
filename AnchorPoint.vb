@@ -1,4 +1,9 @@
 ﻿Public Class AnchorPoint
+
+    Private WithEvents m_State As State
+
+    Private m_PBox As PictureBox
+
     Private m_strName As String
 
     Private m_bmpSmallCircle As Bitmap
@@ -34,28 +39,28 @@
         End Set
     End Property
 
-    Friend Sub MouseEnteredState(ByVal sender As String, ByVal Pbx As PictureBox)
+    Private Sub State_MouseEntered() Handles m_State.MouseEntered
         m_bEnteredState = True
-        ShowTransparentCircle(Pbx)
+        ShowTransparentCircle(m_PBox)
     End Sub
 
-    Friend Sub MouseLeftState()
+    Private Sub State_MouseLeave() Handles m_State.MouseLeave
         m_bEnteredState = False
     End Sub
 
-    Friend Sub MouseMove(ByVal sender As Object, ByVal e As MouseEventArgs)
+    Private Sub State_MouseMove(ByVal e As MouseEventArgs) Handles m_State.MouseMove
         If m_bEnteredState Then
             Dim a As Integer = Math.Abs(m_pCenter.X - e.Location.X)
             Dim b As Integer = Math.Abs(m_pCenter.Y - e.Location.Y)
             Dim hypotenuse As Integer = Math.Sqrt((a ^ 2) + (b ^ 2))
             Dim radius As Integer = SmallCircleRadius()
-            Dim pbx As PictureBox = CType(sender, PictureBox)
+
             If hypotenuse < radius And Not m_bMouseEntered Then
-                m_bmpPbxClone = pbx.Image.Clone
-                ShowCircle(pbx)
+                m_bmpPbxClone = m_PBox.Image.Clone
+                ShowCircle(m_PBox)
                 m_bMouseEntered = True
             ElseIf hypotenuse > radius And m_bMouseEntered Then
-                pbx.Image = m_bmpPbxClone.Clone
+                m_PBox.Image = m_bmpPbxClone.Clone
                 m_bMouseEntered = False
             End If
         End If
@@ -115,11 +120,13 @@
         bmp2.Dispose()
     End Sub
 
-    Public Sub New(ByVal strName As String, ByVal pbx As PictureBox, ByVal p As Point)
+    Public Sub New(ByVal strName As String, ByVal st As State, ByVal p As Point)
         m_strName = strName
-        m_bmpSmallCircle = m_Objects.SmallCircle
-        m_bmpSmallCircle_Transparent = m_Objects.SmallCircle_Transparent
-        DrawPoint(pbx, p)
+        m_State = st
+        m_PBox = st.PBox
+        m_bmpSmallCircle = G_Objects.SmallCircle
+        m_bmpSmallCircle_Transparent = G_Objects.SmallCircle_Transparent
+        DrawPoint(st.PBox, p)
     End Sub
 
 End Class
