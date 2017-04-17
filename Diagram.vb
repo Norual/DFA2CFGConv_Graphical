@@ -23,7 +23,7 @@
         m_bmpCircle = G_Objects.Circle
         m_bmpClone = GetCurrentDisplayImage()
 
-        m_StateWrapper = New StateWrapper(Me)
+        m_StateWrapper = New StateWrapper(DisplayArea)
     End Sub
 
     Friend Property SelectedTool As Tools
@@ -34,12 +34,10 @@
             m_Tool = value
             Select Case m_Tool
                 Case Tools.Pointer
-                    DisplayArea.Image = m_bmpClone.Clone
+                    m_StateWrapper.Enabled = True
                 Case Tools.State
-
+                    m_StateWrapper.Enabled = False
             End Select
-
-            m_StateWrapper.Tool = value
         End Set
     End Property
 
