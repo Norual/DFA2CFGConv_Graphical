@@ -129,4 +129,11 @@
     '    DrawPoint(st.PBox, p)
     'End Sub
 #End Region
+    Private WithEvents C_State As State
+    Private C_strName As String
+
+
+    Public Sub New(ByVal Name As String, ByVal st As State)
+
+    End Sub
 End Class

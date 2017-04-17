@@ -213,6 +213,15 @@
         C_bmpCircle = G_Objects.Circle 
     End Sub
 
+    Public Property Image As Bitmap
+        Get
+            Return C_bmpCircle.Clone
+        End Get
+        Set(value As Bitmap)
+            C_bmpCircle = value.Clone
+        End Set
+    End Property
+
     Public Property Name As String
         Get
             Return C_strName
